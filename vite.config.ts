@@ -101,8 +101,7 @@ export default defineConfig(({ mode }) => {
     // Define global constants for the app
     define: {
       // Make sure these values are available at build time
-      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify("https://atdyclyrllwbqptvlpee.supabase.co"),
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0ZHljbHlybGx3YnFwdHZscGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQzNzk5NTcsImV4cCI6MjA1OTk1NTk1N30.-g4K-4icu5QEOEKynXH39S3Fdm4I7vuyoLf1RpzyVY8"),
+      // Supabase keys removed as we're using localStorage instead
       'import.meta.env.VITE_TWITCH_CLIENT_ID': JSON.stringify("vujwln85ho3n32bitmn68rspe75prp"),
       'import.meta.env.VITE_APP_VERSION': JSON.stringify(process.env.npm_package_version || '1.0.0'),
     }

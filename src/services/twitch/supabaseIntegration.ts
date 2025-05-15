@@ -1,21 +1,9 @@
 
-import { supabase } from "@/integrations/supabase/client";
 import { AuthState } from "./types";
 
+// This function is now a no-op since we're using localStorage instead of Supabase
 export const updateUserSettings = async (authState: AuthState): Promise<void> => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user && authState.channelName) {
-      const { error } = await supabase.from('user_settings').upsert({
-        user_id: user.id,
-        channel_name: authState.channelName
-      }, { onConflict: 'user_id' });
-      
-      if (error) {
-        console.error("Error updating user settings:", error);
-      }
-    }
-  } catch (err) {
-    console.error("Error saving user settings:", err);
-  }
+  // Settings are now stored in localStorage via the SettingsService
+  // No need to update Supabase
+  console.log("User settings updated locally", authState.channelName);
 };
