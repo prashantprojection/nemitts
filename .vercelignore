@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+
+# Build files
+.git
+.github
+.vscode
+
+# Config files
+.eslintrc
+.prettierrc
+.editorconfig
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Misc
+README.md
+LICENSE
+*.log
+.DS_Store

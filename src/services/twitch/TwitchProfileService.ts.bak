@@ -1,0 +1,447 @@
+import twitchAuthService from './TwitchAuthService';
+import { CLIENT_ID } from './types';
+
+interface UserProfile {
+  id: string;
+  login: string;
+  displayName: string;
+  profileImageUrl: string;
+  timestamp: number;
+  imageValidated?: boolean;
+}
+
+/**
+ * Service for fetching and caching Twitch user profiles
+ *
+ * Uses the Twitch API to fetch user profiles by username or ID
+ * https://dev.twitch.tv/docs/api/reference/#get-users
+ */
+class TwitchProfileService {
+  private profileCache: Map<string, UserProfile> = new Map();
+  private readonly CACHE_DURATION = 3600 * 1000; // 1 hour
+  private batchRequests: Map<string, Promise<UserProfile>> = new Map();
+  private batchTimer: NodeJS.Timeout | null = null;
+  private batchQueue: string[] = [];
+  private readonly BATCH_DELAY = 300; // ms to wait before processing batch
+  private readonly MAX_BATCH_SIZE = 100; // Twitch API limit
+  // Default profile image from Twitch CDN
+  private readonly DEFAULT_PROFILE_IMAGE = 'https://static-cdn.jtvnw.net/user-default-pictures-uv/ebe4cd89-b4f4-4cd9-adac-2f30151b4209-profile_image-70x70.png';
+
+  // Flag to track if we've cleared the cache on startup
+  private hasInitializedCache = false;
+
+  /**
+   * Get a user's profile by username
+   * @param username The Twitch username
+   * @param forceRefresh Whether to force a refresh from the API even if cached
+   * @returns Promise<UserProfile> The user profile
+   */
+  public async getUserProfile(username: string, forceRefresh: boolean = false): Promise<UserProfile | null> {
+    if (!username) return null;
+
+    // Normalize username
+    const normalizedUsername = username.toLowerCase().trim();
+
+    // Check cache first (unless force refresh is requested)
+    if (!forceRefresh) {
+      const cachedProfile = this.profileCache.get(normalizedUsername);
+      if (cachedProfile && (Date.now() - cachedProfile.timestamp) < this.CACHE_DURATION) {
+        console.log(`[TwitchProfileService] Returning cached profile for ${normalizedUsername}`);
+        return cachedProfile;
+      }
+    } else {
+      console.log(`[TwitchProfileService] Force refreshing profile for ${normalizedUsername}`);
+    }
+
+    // Check if there's already a pending request for this username
+    if (this.batchRequests.has(normalizedUsername)) {
+      console.log(`[TwitchProfileService] Returning pending request for ${normalizedUsername}`);
+      return this.batchRequests.get(normalizedUsername) || null;
+    }
+
+    console.log(`[TwitchProfileService] Queueing profile request for ${normalizedUsername}`);
+
+    // Add to batch queue and create a promise for this request
+    const profilePromise = new Promise<UserProfile>((resolve, reject) => {
+      this.batchQueue.push(normalizedUsername);
+
+      // Set up the batch processing if not already set
+      if (!this.batchTimer) {
+        this.batchTimer = setTimeout(() => this.processBatchQueue(), this.BATCH_DELAY);
+      }
+
+      // Store the resolve/reject functions in a closure
+      const requestId = normalizedUsername;
+      this.batchRequests.set(requestId, profilePromise as Promise<UserProfile>);
+
+      // Set up a timeout to prevent hanging promises
+      const timeout = setTimeout(() => {
+        this.batchRequests.delete(requestId);
+
+        // Create a default profile instead of rejecting
+        const defaultProfile: UserProfile = {
+          id: '',
+          login: normalizedUsername,
+          displayName: normalizedUsername,
+          profileImageUrl: '', // Don't use default image, let the UI handle fallback
+          timestamp: Date.now()
+        };
+
+        // Cache the default profile
+        this.profileCache.set(normalizedUsername, defaultProfile);
+
+        console.warn(`[TwitchProfileService] Profile request timed out for ${normalizedUsername}, using default`);
+        resolve(defaultProfile);
+      }, 10000); // 10 second timeout
+
+      // Override the promise with one that includes the resolve/reject functions
+      this.batchRequests.set(requestId, new Promise<UserProfile>((innerResolve, innerReject) => {
+        (profilePromise as any).resolve = (profile: UserProfile) => {
+          clearTimeout(timeout);
+          this.batchRequests.delete(requestId);
+          innerResolve(profile);
+          resolve(profile);
+        };
+        (profilePromise as any).reject = (error: Error) => {
+          clearTimeout(timeout);
+          this.batchRequests.delete(requestId);
+
+          // Create a default profile instead of rejecting
+          const defaultProfile: UserProfile = {
+            id: '',
+            login: normalizedUsername,
+            displayName: normalizedUsername,
+            profileImageUrl: '', // Don't use default image, let the UI handle fallback
+            timestamp: Date.now()
+          };
+
+          // Cache the default profile
+          this.profileCache.set(normalizedUsername, defaultProfile);
+
+          console.warn(`[TwitchProfileService] Error fetching profile for ${normalizedUsername}, using default`, error);
+          innerResolve(defaultProfile);
+          resolve(defaultProfile);
+        };
+      }));
+    });
+
+    return profilePromise;
+  }
+
+  /**
+   * Process the batch queue of usernames
+   */
+  private async processBatchQueue(): Promise<void> {
+    this.batchTimer = null;
+
+    if (this.batchQueue.length === 0) return;
+
+    // Take up to MAX_BATCH_SIZE usernames from the queue
+    const batch = this.batchQueue.splice(0, this.MAX_BATCH_SIZE);
+    console.log(`[TwitchProfileService] Processing batch of ${batch.length} usernames:`, batch);
+
+    try {
+      const authState = twitchAuthService.getAuthState();
+      if (!authState.accessToken) {
+        console.warn('[TwitchProfileService] No access token available for profile fetch');
+
+        // Even without an access token, create default profiles
+        batch.forEach(username => {
+          const promise = this.batchRequests.get(username) as any;
+          if (promise) {
+            const defaultProfile: UserProfile = {
+              id: '',
+              login: username.toLowerCase(),
+              displayName: username,
+              profileImageUrl: '', // Don't use default image, let the UI handle fallback
+              timestamp: Date.now()
+            };
+
+            // Cache the default profile
+            this.profileCache.set(username.toLowerCase(), defaultProfile);
+
+            // Resolve the promise with the default profile
+            promise.resolve(defaultProfile);
+          }
+        });
+
+        return;
+      }
+
+      // Build the URL with all usernames
+      // Using the Twitch API Get Users endpoint: https://dev.twitch.tv/docs/api/reference/#get-users
+      const url = new URL('https://api.twitch.tv/helix/users');
+      batch.forEach(username => {
+        url.searchParams.append('login', username);
+      });
+
+      console.log(`[TwitchProfileService] Fetching profiles from Twitch API: ${url.toString()}`);
+
+      // Call Twitch API to get user profiles
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Authorization': `Bearer ${authState.accessToken}`,
+          'Client-Id': CLIENT_ID
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user profiles: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(`[TwitchProfileService] API response:`, data);
+
+      // Process each user in the response
+      if (data.data && data.data.length > 0) {
+        const userMap = new Map<string, any>();
+
+        // Create a map of username to user data
+        data.data.forEach((user: any) => {
+          userMap.set(user.login.toLowerCase(), user);
+        });
+
+        // Resolve promises for each username in the batch
+        batch.forEach(username => {
+          const userData = userMap.get(username.toLowerCase());
+          const promise = this.batchRequests.get(username) as any;
+
+          if (userData && promise) {
+            const profile: UserProfile = {
+              id: userData.id,
+              login: userData.login.toLowerCase(),
+              displayName: userData.display_name,
+              profileImageUrl: userData.profile_image_url || this.DEFAULT_PROFILE_IMAGE,
+              timestamp: Date.now(),
+              imageValidated: false
+            };
+
+            // Validate the profile image URL in the background
+            if (profile.profileImageUrl) {
+              this.validateImageUrl(profile.profileImageUrl)
+                .then(() => {
+                  profile.imageValidated = true;
+                })
+                .catch(() => {
+                  console.warn(`[TwitchProfileService] Invalid profile image for ${profile.login}, using default`);
+                  profile.profileImageUrl = this.DEFAULT_PROFILE_IMAGE;
+                  profile.imageValidated = true;
+                });
+            }
+
+            console.log(`[TwitchProfileService] Found profile for ${username}:`, profile);
+
+            // Cache the profile
+            this.profileCache.set(username.toLowerCase(), profile);
+
+            // Resolve the promise
+            promise.resolve(profile);
+          } else if (promise) {
+            // If user not found, create a default profile
+            const defaultProfile: UserProfile = {
+              id: '',
+              login: username.toLowerCase(),
+              displayName: username,
+              profileImageUrl: this.DEFAULT_PROFILE_IMAGE,
+              timestamp: Date.now()
+            };
+
+            console.log(`[TwitchProfileService] User ${username} not found in API response, using default profile`);
+
+            // Cache the default profile
+            this.profileCache.set(username.toLowerCase(), defaultProfile);
+
+            // Resolve the promise with the default profile
+            promise.resolve(defaultProfile);
+          }
+        });
+      } else {
+        // No users found, resolve with default profiles
+        console.log(`[TwitchProfileService] No users found in API response, using default profiles for all`);
+
+        batch.forEach(username => {
+          const promise = this.batchRequests.get(username) as any;
+
+          if (promise) {
+            const defaultProfile: UserProfile = {
+              id: '',
+              login: username.toLowerCase(),
+              displayName: username,
+              profileImageUrl: this.DEFAULT_PROFILE_IMAGE,
+              timestamp: Date.now()
+            };
+
+            // Cache the default profile
+            this.profileCache.set(username.toLowerCase(), defaultProfile);
+
+            // Resolve the promise with the default profile
+            promise.resolve(defaultProfile);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('[TwitchProfileService] Error fetching user profiles:', error);
+
+      // Create default profiles instead of rejecting
+      batch.forEach(username => {
+        const promise = this.batchRequests.get(username) as any;
+        if (promise) {
+          const defaultProfile: UserProfile = {
+            id: '',
+            login: username.toLowerCase(),
+            displayName: username,
+            profileImageUrl: '', // Don't use default image, let the UI handle fallback
+            timestamp: Date.now()
+          };
+
+          // Cache the default profile
+          this.profileCache.set(username.toLowerCase(), defaultProfile);
+
+          // Resolve with default profile instead of rejecting
+          promise.resolve(defaultProfile);
+        }
+      });
+    }
+
+    // Process any remaining usernames in the queue
+    if (this.batchQueue.length > 0) {
+      this.batchTimer = setTimeout(() => this.processBatchQueue(), this.BATCH_DELAY);
+    }
+  }
+
+  /**
+   * Get a user's profile by ID
+   * @param userId The Twitch user ID
+   * @param forceRefresh Whether to force a refresh from the API even if cached
+   * @returns Promise<UserProfile> The user profile
+   */
+  public async getUserProfileById(userId: string, forceRefresh: boolean = false): Promise<UserProfile | null> {
+    if (!userId) return null;
+
+    // Check if we have this user ID in our cache already
+    if (!forceRefresh) {
+      for (const profile of this.profileCache.values()) {
+        if (profile.id === userId) {
+          console.log(`[TwitchProfileService] Found profile for ID ${userId} in cache`);
+          return profile;
+        }
+      }
+    }
+
+    try {
+      const authState = twitchAuthService.getAuthState();
+      if (!authState.accessToken) {
+        console.warn('[TwitchProfileService] No access token available for profile fetch by ID');
+        return null;
+      }
+
+      // Using the Twitch API Get Users endpoint with ID parameter
+      const url = new URL('https://api.twitch.tv/helix/users');
+      url.searchParams.append('id', userId);
+
+      console.log(`[TwitchProfileService] Fetching profile by ID from Twitch API: ${url.toString()}`);
+
+      // Call Twitch API to get user profile
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Authorization': `Bearer ${authState.accessToken}`,
+          'Client-Id': CLIENT_ID
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user profile by ID: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(`[TwitchProfileService] API response for ID ${userId}:`, data);
+
+      if (data.data && data.data.length > 0) {
+        const userData = data.data[0];
+
+        const profile: UserProfile = {
+          id: userData.id,
+          login: userData.login.toLowerCase(),
+          displayName: userData.display_name,
+          profileImageUrl: userData.profile_image_url || this.DEFAULT_PROFILE_IMAGE,
+          timestamp: Date.now(),
+          imageValidated: false
+        };
+
+        // Validate the profile image URL in the background
+        if (profile.profileImageUrl) {
+          this.validateImageUrl(profile.profileImageUrl)
+            .then(() => {
+              profile.imageValidated = true;
+            })
+            .catch(() => {
+              console.warn(`[TwitchProfileService] Invalid profile image for ${profile.login}, using default`);
+              profile.profileImageUrl = this.DEFAULT_PROFILE_IMAGE;
+              profile.imageValidated = true;
+            });
+        }
+
+        // Cache the profile by login name
+        this.profileCache.set(profile.login, profile);
+
+        return profile;
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`[TwitchProfileService] Error fetching profile for ID ${userId}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear the profile cache
+   */
+  public clearCache(): void {
+    console.log('[TwitchProfileService] Clearing profile cache');
+    this.profileCache.clear();
+  }
+
+  /**
+   * Initialize the service and ensure the cache is fresh
+   * This should be called when the application starts
+   */
+  public initialize(): void {
+    if (!this.hasInitializedCache) {
+      console.log('[TwitchProfileService] Initializing service and clearing cache');
+      this.clearCache();
+      this.hasInitializedCache = true;
+    }
+  }
+
+  /**
+   * Validate that an image URL is accessible
+   * @param url The URL to validate
+   * @returns A promise that resolves if the image is valid, rejects if not
+   */
+  public validateImageUrl(url: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!url) {
+        reject(new Error('No URL provided'));
+        return;
+      }
+
+      const img = new Image();
+
+      img.onload = () => {
+        console.log(`[TwitchProfileService] Successfully validated image URL: ${url}`);
+        resolve();
+      };
+
+      img.onerror = () => {
+        console.warn(`[TwitchProfileService] Failed to load image from ${url}`);
+        reject(new Error(`Failed to load image from ${url}`));
+      };
+
+      img.src = url;
+    });
+  }
+}
+
+const twitchProfileService = new TwitchProfileService();
+export default twitchProfileService;

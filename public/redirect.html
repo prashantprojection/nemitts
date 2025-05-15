@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0e0e10;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      padding: 30px;
+      border-radius: 10px;
+      background-color: #18181b;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #9147ff;
+      margin-bottom: 20px;
+    }
+    p {
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #9147ff;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Authentication Successful</h1>
+    <p>You've successfully authenticated with Twitch.</p>
+    <div class="loader"></div>
+    <p>Redirecting you back to the application...</p>
+    <div id="manual-redirect" style="display: none; margin-top: 20px;">
+      <p style="color: #ff9800;">If you're not redirected automatically, click the button below:</p>
+      <button id="redirect-button" style="background-color: #9147ff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;" onclick="window.location.href = window.location.origin;">Return to Application</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Import error suppression utility
+    function setupErrorSuppression() {
+      // Store original console methods
+      const originalConsoleError = console.error;
+      const originalConsoleWarn = console.warn;
+      const originalConsoleInfo = console.info;
+      const originalConsoleLog = console.log;
+
+      // Patterns to suppress in console output
+      const suppressPatterns = [
+        '7TV',
+        'seventv',
+        'blob:https://id.twitch.tv/',
+        'net::ERR_FILE_NOT_FOUND',
+        'MutationObserver',
+        'message port closed'
+      ];
+
+      // Helper to check if a message contains any of the suppression patterns
+      const shouldSuppress = (args) => {
+        if (args.length === 0) return false;
+
+        const messageString = Array.from(args).join(' ');
+        return suppressPatterns.some(pattern => messageString.includes(pattern));
+      };
+
+      // Override console.error
+      console.error = function() {
+        if (shouldSuppress(arguments)) return;
+        originalConsoleError.apply(console, arguments);
+      };
+
+      // Override console.warn
+      console.warn = function() {
+        if (shouldSuppress(arguments)) return;
+        originalConsoleWarn.apply(console, arguments);
+      };
+
+      // Override console.info
+      console.info = function() {
+        if (shouldSuppress(arguments)) return;
+        originalConsoleInfo.apply(console, arguments);
+      };
+
+      // Override console.log
+      console.log = function() {
+        if (shouldSuppress(arguments)) return;
+        originalConsoleLog.apply(console, arguments);
+      };
+
+      // Set up global error handler for blob URL errors
+      window.addEventListener('error', function(event) {
+        // Specifically check for blob URL errors from Twitch
+        if (event.filename && event.filename.startsWith('blob:https://id.twitch.tv/')) {
+          event.preventDefault();
+          return true;
+        }
+
+        // Also suppress other common errors
+        if (event.message && (
+            event.message.includes('message port closed') ||
+            event.message.includes('MutationObserver') ||
+            event.message.includes('7TV'))) {
+          event.preventDefault();
+          return true;
+        }
+
+        return false;
+      }, true);
+
+      // Handle unhandled promise rejections
+      window.addEventListener('unhandledrejection', function(event) {
+        // Check if the error is related to Twitch or 7TV
+        if (event.reason) {
+          // Handle error objects with message property
+          if (typeof event.reason.message === 'string' && (
+              event.reason.message.includes('blob:https://id.twitch.tv/') ||
+              event.reason.message.includes('MutationObserver') ||
+              event.reason.message.includes('7TV'))) {
+            event.preventDefault();
+            return true;
+          }
+
+          // Handle string errors
+          if (typeof event.reason === 'string' && (
+              event.reason.includes('blob:https://id.twitch.tv/') ||
+              event.reason.includes('MutationObserver') ||
+              event.reason.includes('7TV'))) {
+            event.preventDefault();
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+
+    // Set up error suppression
+    setupErrorSuppression();
+
+    // Function to log debug messages (simplified)
+    function debugLog(message, data) {
+      // Only log in development environments
+      if (window.location.hostname === 'localhost') {
+        console.log(`[DEBUG] ${message}`, data || '');
+      }
+    }
+
+    // Function to extract hash parameters
+    function getHashParams() {
+      const hash = window.location.hash.substring(1);
+      const params = {};
+
+      if (!hash) {
+        debugLog('No hash found in URL');
+        return params;
+      }
+
+      hash.split('&').forEach(function(part) {
+        const item = part.split('=');
+        params[item[0]] = decodeURIComponent(item[1]);
+      });
+
+      debugLog('Parsed hash parameters', {
+        hasAccessToken: !!params.access_token,
+        hasState: !!params.state,
+        hasError: !!params.error
+      });
+
+      return params;
+    }
+
+    // Function to store auth data in multiple storage mechanisms
+    function storeAuthData(accessToken, state) {
+      try {
+        if (!accessToken) {
+          debugLog('No access token provided to storeAuthData');
+          return;
+        }
+
+        debugLog('Storing auth data', { tokenLength: accessToken.length });
+
+        // Create auth objects in multiple formats for better compatibility
+        const simpleAuthData = {
+          accessToken: accessToken,
+          timestamp: Date.now()
+        };
+
+        const fullAuthData = {
+          accessToken: accessToken,
+          isLoggedIn: true,
+          timestamp: Date.now(),
+          expiresAt: Date.now() + (3600 * 1000) // Default to 1 hour expiration
+        };
+
+        // First, clear any existing auth data to prevent conflicts
+        try {
+          // Clear localStorage
+          localStorage.removeItem('twitch-tts-auth-state');
+          localStorage.removeItem('twitch-auth-token');
+          localStorage.removeItem('twitch-auth-data');
+          localStorage.removeItem('twitch-auth-state');
+
+          // Clear sessionStorage
+          sessionStorage.removeItem('twitch-tts-auth-state');
+          sessionStorage.removeItem('twitch-auth-token');
+          sessionStorage.removeItem('twitch-auth-data');
+          sessionStorage.removeItem('twitch-auth-state');
+
+          // Clear cookies
+          document.cookie = `twitch-tts-auth-state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie = `twitch-tts-auth-state-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie = `twitch-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie = `twitch-auth-state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+
+          debugLog('Cleared existing auth data');
+        } catch (e) {
+          debugLog('Error clearing existing auth data', e);
+        }
+
+        // Store in localStorage with multiple keys for redundancy
+        try {
+          localStorage.setItem('twitch-tts-auth-state', JSON.stringify(fullAuthData));
+          localStorage.setItem('twitch-auth-token', accessToken);
+          localStorage.setItem('twitch-auth-data', JSON.stringify(simpleAuthData));
+          localStorage.setItem('twitch-auth-state', JSON.stringify(simpleAuthData));
+          debugLog('Stored in localStorage');
+        } catch (e) {
+          debugLog('Failed to store in localStorage', e);
+        }
+
+        // Store in sessionStorage with multiple keys for redundancy
+        try {
+          sessionStorage.setItem('twitch-tts-auth-state', JSON.stringify(fullAuthData));
+          sessionStorage.setItem('twitch-auth-token', accessToken);
+          sessionStorage.setItem('twitch-auth-data', JSON.stringify(simpleAuthData));
+          sessionStorage.setItem('twitch-auth-state', JSON.stringify(simpleAuthData));
+          debugLog('Stored in sessionStorage');
+        } catch (e) {
+          debugLog('Failed to store in sessionStorage', e);
+        }
+
+        // Store as cookies with multiple formats for redundancy
+        try {
+          // Store the full auth state
+          document.cookie = `twitch-tts-auth-state=${encodeURIComponent(JSON.stringify(fullAuthData))};path=/;max-age=2592000;SameSite=Lax`;
+
+          // Store just the token in multiple formats
+          document.cookie = `twitch-tts-auth-state-token=${encodeURIComponent(accessToken)};path=/;max-age=2592000;SameSite=Lax`;
+          document.cookie = `twitch-auth-token=${encodeURIComponent(accessToken)};path=/;max-age=2592000;SameSite=Lax`;
+
+          // Store with different key for compatibility
+          document.cookie = `twitch-auth-state=${encodeURIComponent(JSON.stringify(simpleAuthData))};path=/;max-age=2592000;SameSite=Lax`;
+          debugLog('Stored in cookies');
+        } catch (e) {
+          debugLog('Failed to store in cookies', e);
+        }
+
+        // Verify storage was successful
+        try {
+          const storedToken = localStorage.getItem('twitch-auth-token');
+          const storedState = localStorage.getItem('twitch-tts-auth-state');
+          debugLog('Storage verification', {
+            tokenStored: !!storedToken,
+            stateStored: !!storedState,
+            tokenLength: storedToken ? storedToken.length : 0
+          });
+        } catch (e) {
+          debugLog('Error verifying storage', e);
+        }
+
+        debugLog('Auth data stored successfully in multiple locations');
+      } catch (e) {
+        // Log the error but continue
+        debugLog('Error in storeAuthData', e);
+      }
+    }
+
+    // Main function to handle the redirect
+    function handleRedirect() {
+      try {
+        debugLog('Starting redirect handling');
+
+        // Debug info element was removed, so we don't need to show it
+
+        // Get hash parameters
+        const params = getHashParams();
+        debugLog('Current URL', window.location.href);
+        debugLog('Origin', window.location.origin);
+
+        // Check if we have an access token
+        if (params.access_token) {
+          debugLog('Found access token in hash');
+
+          // Store the token in various storage mechanisms
+          storeAuthData(params.access_token, params.state);
+
+          // Log success
+          debugLog('Authentication successful, token stored');
+
+          // Show manual redirect button after a short delay (with safe element access)
+          setTimeout(function() {
+            const manualRedirectElement = document.getElementById('manual-redirect');
+            if (manualRedirectElement) {
+              manualRedirectElement.style.display = 'block';
+            }
+          }, 3000);
+
+          // Redirect to the main app with a delay to avoid message port errors
+          debugLog('Preparing to redirect to main app');
+          setTimeout(function() {
+            try {
+              debugLog('Redirecting to main app now');
+              window.location.href = window.location.origin;
+            } catch (e) {
+              // If there's an error with the redirect, try again with a longer delay
+              debugLog('Error during redirect, trying again with longer delay', e);
+              setTimeout(function() {
+                window.location.href = window.location.origin;
+              }, 1000);
+            }
+          }, 2000); // Increased delay for better reliability
+        } else if (params.error) {
+          // Handle error
+          debugLog('Found error in hash parameters', params.error);
+
+          // Show error message (with safe element access)
+          const titleElement = document.querySelector('h1');
+          const messageElement = document.querySelector('p');
+          const loaderElement = document.querySelector('.loader');
+
+          if (titleElement) titleElement.textContent = 'Authentication Error';
+          if (messageElement) messageElement.textContent = `Error: ${params.error_description || params.error}`;
+          if (loaderElement) loaderElement.style.display = 'none';
+
+          // Redirect to the main app with error parameter
+          debugLog('Preparing to redirect with error parameter');
+          setTimeout(function() {
+            try {
+              debugLog('Redirecting with error parameter now');
+              window.location.href = window.location.origin + '?auth_error=' + encodeURIComponent(params.error);
+            } catch (e) {
+              // If there's an error with the redirect, try again with a longer delay
+              debugLog('Error during redirect, trying again with longer delay', e);
+              setTimeout(function() {
+                window.location.href = window.location.origin;
+              }, 1000);
+            }
+          }, 3000); // Increased delay to allow reading the error
+        } else {
+          // No parameters, just redirect to main app
+          debugLog('No auth parameters found in hash');
+
+          // Show warning message (with safe element access)
+          const titleElement = document.querySelector('h1');
+          const messageElement = document.querySelector('p');
+          const loaderElement = document.querySelector('.loader');
+
+          if (titleElement) titleElement.textContent = 'No Authentication Data';
+          if (messageElement) messageElement.textContent = 'No authentication data was found in the URL.';
+          if (loaderElement) loaderElement.style.display = 'none';
+
+          debugLog('Preparing to redirect to main app');
+          setTimeout(function() {
+            try {
+              debugLog('Redirecting to main app now');
+              window.location.href = window.location.origin;
+            } catch (e) {
+              // If there's an error with the redirect, try again with a longer delay
+              debugLog('Error during redirect, trying again with longer delay', e);
+              setTimeout(function() {
+                window.location.href = window.location.origin;
+              }, 1000);
+            }
+          }, 3000); // Increased delay to allow reading the message
+        }
+      } catch (e) {
+        // If there's any error in the redirect handling, show error and then redirect
+        debugLog('Unhandled error in redirect handling', e);
+
+        // Show error message (with safe element access)
+        const titleElement = document.querySelector('h1');
+        const messageElement = document.querySelector('p');
+        const loaderElement = document.querySelector('.loader');
+
+        if (titleElement) titleElement.textContent = 'Error Processing Authentication';
+        if (messageElement) messageElement.textContent = `An error occurred: ${e.message}`;
+        if (loaderElement) loaderElement.style.display = 'none';
+
+        setTimeout(function() {
+          window.location.href = window.location.origin;
+        }, 3000);
+      }
+    }
+
+    // Execute with a longer delay to ensure the page is fully loaded
+    // This gives more time for any Twitch scripts to complete
+    setTimeout(handleRedirect, 2000);
+  </script>
+</body>
+</html>

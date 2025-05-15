@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Page</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #1a1b26;
+      color: #a9b1d6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #7aa2f7;
+      margin-bottom: 20px;
+    }
+    p {
+      margin-bottom: 10px;
+      max-width: 600px;
+    }
+    .card {
+      background-color: #24283b;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+    .success {
+      color: #9ece6a;
+      font-weight: bold;
+    }
+    .error {
+      color: #f7768e;
+      font-weight: bold;
+    }
+    button {
+      background-color: #7aa2f7;
+      color: #1a1b26;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #89b4fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Application Test Page</h1>
+    <p>This page is used to test if the application is working correctly.</p>
+    <p>If you can see this page, the server is running properly.</p>
+    <p class="success">Status: Server is running</p>
+    <button id="testButton">Test React</button>
+    <div id="reactTest"></div>
+  </div>
+
+  <script>
+    // Simple test to check if basic JavaScript is working
+    document.getElementById('testButton').addEventListener('click', function() {
+      const testDiv = document.getElementById('reactTest');
+      testDiv.innerHTML = '<p class="success">JavaScript is working correctly!</p>';
+      
+      // Check if React is available
+      if (typeof React !== 'undefined') {
+        testDiv.innerHTML += '<p class="success">React is available!</p>';
+      } else {
+        testDiv.innerHTML += '<p class="error">React is not available.</p>';
+      }
+      
+      // Check if ReactDOM is available
+      if (typeof ReactDOM !== 'undefined') {
+        testDiv.innerHTML += '<p class="success">ReactDOM is available!</p>';
+      } else {
+        testDiv.innerHTML += '<p class="error">ReactDOM is not available.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

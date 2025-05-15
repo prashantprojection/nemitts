@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Twitch TTS Reader</title>
+    <meta name="description" content="Listen to your Twitch chat messages with text-to-speech technology" />
+    <meta name="author" content="Nemi" />
+
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://atdyclyrllwbqptvlpee.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.gpteng.co">
+
+    <!-- Inject critical CSS -->
+    <style id="critical-css">
+      /* Critical CSS - Only what's needed for initial render */
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 222 14% 10%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 14% 10%;
+        --primary: 214 100% 60%;
+        --primary-foreground: 0 0% 100%;
+        --border: 214 20% 90%;
+      }
+
+      .dark {
+        --background: 222 14% 12%;
+        --foreground: 210 20% 98%;
+        --card: 222 14% 16%;
+        --card-foreground: 210 20% 98%;
+        --primary: 214 92% 46%;
+        --primary-foreground: 0 0% 100%;
+        --border: 222 14% 24%;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        min-height: 100vh;
+      }
+
+      /* Loading spinner */
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: hsl(var(--primary));
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .dark .loading-spinner {
+        border-color: rgba(255, 255, 255, 0.1);
+        border-top-color: hsl(var(--primary));
+      }
+
+      /* Basic layout classes */
+      .flex { display: flex; }
+      .flex-col { flex-direction: column; }
+      .items-center { align-items: center; }
+      .justify-center { justify-content: center; }
+      .w-full { width: 100%; }
+      .h-full { height: 100%; }
+      .min-h-screen { min-height: 100vh; }
+
+      /* Header styles */
+      .twitch-gradient {
+        background: linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
+      }
+    </style>
+
+    <!-- Theme initialization script - inline for performance -->
+    <script>
+      // Check for dark mode preference
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+
+    <meta property="og:title" content="Twitch TTS Reader" />
+    <meta property="og:description" content="Listen to your Twitch chat messages with text-to-speech technology" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" href="/logo.svg" />
+
+    <!-- Load CSS in a non-blocking way -->
+    <link rel="preload" as="style" href="/assets/index-DnyQH1WG.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/assets/index-DnyQH1WG.css"></noscript>
+
+    <!-- Preload key assets - using fetchpriority instead of preload -->
+    <link rel="icon" fetchpriority="high" href="/logo-small.svg" type="image/svg+xml">
+  </head>
+
+  <body>
+    <div id="root">
+      <!-- Initial loading state -->
+      <div class="loading">
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+
+    <!-- Patch scripts removed -->
+
+    <!-- Load React from local vendor folder instead of unpkg.com -->
+    <script src="/vendor/react.production.min.js"></script>
+    <script src="/vendor/react-dom.production.min.js"></script>
+
+    <!-- Main application script -->
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Error suppression for Twitch extensions -->
+    <script type="module">
+      import { setupErrorSuppression } from '/src/utils/errorSuppressionUtils.ts';
+
+      // Set up error suppression for Twitch extensions
+      document.addEventListener('DOMContentLoaded', () => {
+        setupErrorSuppression();
+      });
+    </script>
+
+    <!-- Add font loading optimization -->
+    <script>
+      // Use font loading API if available
+      if ('fonts' in document) {
+        // Optimize font loading
+        document.fonts.ready.then(() => {
+          console.log('Fonts are loaded');
+        });
+      }
+    </script>
+  </body>
+</html>

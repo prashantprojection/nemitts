@@ -1,0 +1,39 @@
+/* Add styles for fallback avatars */
+.fallback-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-color, #9146FF);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.fallback-avatar::after {
+  content: attr(data-initial);
+}
+
+/* WhatsApp style fallback avatar */
+.whatsapp-avatar .fallback-avatar {
+  border-radius: 50%;
+  background-color: #128C7E;
+}
+
+/* Telegram style fallback avatar */
+.telegram-avatar .fallback-avatar {
+  border-radius: 50%;
+  background-color: #0088cc;
+}
+
+/* Discord style fallback avatar */
+.discord-avatar .fallback-avatar {
+  border-radius: 50%;
+  background-color: #5865F2;
+}
+
+/* Twitch style fallback avatar */
+.chat-avatar .fallback-avatar {
+  border-radius: 50%;
+}

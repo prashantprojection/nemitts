@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle with 3D Effect -->
+  <circle cx="64" cy="64" r="60" fill="url(#paint0_radial)" filter="url(#shadow)"/>
+  <circle cx="64" cy="64" r="60" fill="url(#paint1_linear)" fill-opacity="0.4"/>
+  <circle cx="64" cy="64" r="60" stroke="url(#paint2_linear)" stroke-width="2"/>
+
+  <!-- Text Bubble and Sound Waves -->
+  <g transform="translate(26, 39)">
+    <!-- Text Bubble -->
+    <g filter="url(#bubble_shadow)">
+      <!-- Main Bubble Body -->
+      <path d="M2 14C2 9.582 5.582 6 10 6H42C46.418 6 50 9.582 50 14V34C50 38.418 46.418 42 42 42H22L14 50V42H10C5.582 42 2 38.418 2 34V14Z" fill="url(#bubble_fill)"/>
+
+      <!-- Bubble Highlight -->
+      <path d="M2 14C2 9.582 5.582 6 10 6H42C46.418 6 50 9.582 50 14V34C50 38.418 46.418 42 42 42H22L14 50V42H10C5.582 42 2 38.418 2 34V14Z" fill="url(#bubble_highlight)" fill-opacity="0.5"/>
+
+      <!-- Bubble Outline -->
+      <path d="M2 14C2 9.582 5.582 6 10 6H42C46.418 6 50 9.582 50 14V34C50 38.418 46.418 42 42 42H22L14 50V42H10C5.582 42 2 38.418 2 34V14Z" stroke="url(#bubble_stroke)" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Text Lines inside bubble -->
+    <g filter="url(#text_shadow)">
+      <path d="M10 18H42" stroke="url(#text_gradient)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M10 26H32" stroke="url(#text_gradient)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M10 34H22" stroke="url(#text_gradient)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- Sound Waves from Chat Bubble -->
+    <g filter="url(#wave_shadow)" transform="translate(0, 5)">
+      <!-- Curved Sound Waves -->
+      <path d="M54 34C62 26 62 10 54 2" stroke="url(#wave_gradient)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M62 42C74 30 74 6 62 -6" stroke="url(#wave_gradient)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M70 50C86 34 86 2 70 -14" stroke="url(#wave_gradient)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Glossy Overlay -->
+  <circle cx="64" cy="64" r="45" fill="url(#glossy)" fill-opacity="0.15"/>
+
+  <!-- Definitions -->
+  <defs>
+    <!-- Main Circle Gradients -->
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(64 64) rotate(90) scale(60)">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E6F4FF"/>
+    </radialGradient>
+
+    <linearGradient id="paint1_linear" x1="64" y1="4" x2="64" y2="124" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6D28D9" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#6D28D9" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="paint2_linear" x1="64" y1="4" x2="64" y2="124" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+
+    <!-- Bubble Gradients -->
+    <linearGradient id="bubble_fill" x1="2" y1="6" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F0F0F0"/>
+    </linearGradient>
+
+    <linearGradient id="bubble_highlight" x1="2" y1="6" x2="26" y2="38" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="bubble_stroke" x1="2" y1="6" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+
+    <!-- Wave Gradient -->
+    <linearGradient id="wave_gradient" x1="54" y1="2" x2="70" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+
+    <!-- Text Gradient -->
+    <linearGradient id="text_gradient" x1="10" y1="18" x2="42" y2="34" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+
+
+
+    <!-- Glossy Overlay -->
+    <radialGradient id="glossy" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(64 51.5) rotate(90) scale(37.5)">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Filters -->
+    <filter id="shadow" x="0" y="0" width="128" height="128" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="1"/>
+      <feGaussianBlur stdDeviation="2"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.427 0 0 0 0 0.157 0 0 0 0 0.851 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
+    </filter>
+
+    <filter id="bubble_shadow" x="0" y="5" width="52" height="47" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="1"/>
+      <feGaussianBlur stdDeviation="0.5"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.427 0 0 0 0 0.157 0 0 0 0 0.851 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
+    </filter>
+
+    <filter id="wave_shadow" x="51" y="-15.5" width="38" height="67" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="0.5"/>
+      <feGaussianBlur stdDeviation="0.5"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.427 0 0 0 0 0.157 0 0 0 0 0.851 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
+    </filter>
+
+    <filter id="text_shadow" x="8.5" y="16.5" width="35" height="19" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="0.5"/>
+      <feGaussianBlur stdDeviation="0.25"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.427 0 0 0 0 0.157 0 0 0 0 0.851 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
+    </filter>
+
+
+  </defs>
+</svg>

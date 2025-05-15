@@ -1,0 +1,1913 @@
+/* Import critical CSS first for faster initial render */
+@import './styles/critical.css';
+
+/* Import custom animations */
+@import './styles/animations.css';
+
+/* Import chat bubble styles */
+@import './styles/chat-bubbles.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode variables */
+    --background: 0 0% 100%;
+    --foreground: 222 14% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 14% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 14% 10%;
+
+    --primary: 214 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 214 50% 95%;
+    --secondary-foreground: 214 92% 46%;
+
+    --muted: 214 50% 95%;
+    --muted-foreground: 222 14% 46%;
+
+    --accent: 214 50% 95%;
+    --accent-foreground: 214 92% 46%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 90%;
+    --input: 214 20% 90%;
+    --ring: 214 100% 60%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  .dark {
+    /* Dark mode variables */
+    --background: 222 14% 12%;
+    --foreground: 210 20% 98%;
+
+    --card: 222 14% 16%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 222 14% 12%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 214 92% 46%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 222 14% 20%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 222 14% 20%;
+    --muted-foreground: 215 14% 75%;
+
+    --accent: 222 14% 20%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 222 14% 24%;
+    --input: 222 14% 24%;
+    --ring: 214 92% 46%;
+  }
+
+  /* Light Blue theme */
+  .light-blue {
+    --background: 210 50% 98%;
+    --foreground: 217 60% 10%;
+
+    --card: 210 50% 95%;
+    --card-foreground: 217 60% 10%;
+
+    --popover: 210 50% 98%;
+    --popover-foreground: 217 60% 10%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 50% 90%;
+    --secondary-foreground: 217 60% 25%;
+
+    --muted: 210 50% 90%;
+    --muted-foreground: 217 60% 35%;
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 50% 85%;
+    --input: 210 50% 85%;
+    --ring: 217 91% 60%;
+  }
+
+  /* Light Green theme */
+  .light-green {
+    --background: 150 50% 98%;
+    --foreground: 150 60% 10%;
+
+    --card: 150 50% 95%;
+    --card-foreground: 150 60% 10%;
+
+    --popover: 150 50% 98%;
+    --popover-foreground: 150 60% 10%;
+
+    --primary: 142 76% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 150 50% 90%;
+    --secondary-foreground: 150 60% 25%;
+
+    --muted: 150 50% 90%;
+    --muted-foreground: 150 60% 35%;
+
+    --accent: 142 76% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 50% 85%;
+    --input: 150 50% 85%;
+    --ring: 142 76% 45%;
+  }
+
+  /* Dark Blue theme */
+  .blue {
+    --background: 217 60% 10%;
+    --foreground: 213 100% 96%;
+
+    --card: 217 60% 14%;
+    --card-foreground: 213 100% 96%;
+
+    --popover: 217 60% 10%;
+    --popover-foreground: 213 100% 96%;
+
+    --primary: 217 91% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 60% 20%;
+    --secondary-foreground: 213 100% 96%;
+
+    --muted: 217 60% 20%;
+    --muted-foreground: 213 70% 85%;
+
+    --accent: 217 91% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 60% 25%;
+    --input: 217 60% 25%;
+    --ring: 217 91% 65%;
+  }
+
+  /* Dark Purple theme */
+  .purple {
+    --background: 270 60% 10%;
+    --foreground: 270 100% 96%;
+
+    --card: 270 60% 14%;
+    --card-foreground: 270 100% 96%;
+
+    --popover: 270 60% 10%;
+    --popover-foreground: 270 100% 96%;
+
+    --primary: 270 91% 70%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 270 60% 20%;
+    --secondary-foreground: 270 100% 96%;
+
+    --muted: 270 60% 20%;
+    --muted-foreground: 270 70% 85%;
+
+    --accent: 270 91% 70%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 60% 25%;
+    --input: 270 60% 25%;
+    --ring: 270 91% 70%;
+  }
+
+  /* Dark Red theme */
+  .red {
+    --background: 350 60% 10%;
+    --foreground: 350 100% 96%;
+
+    --card: 350 60% 14%;
+    --card-foreground: 350 100% 96%;
+
+    --popover: 350 60% 10%;
+    --popover-foreground: 350 100% 96%;
+
+    --primary: 350 91% 70%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 350 60% 20%;
+    --secondary-foreground: 350 100% 96%;
+
+    --muted: 350 60% 20%;
+    --muted-foreground: 350 70% 85%;
+
+    --accent: 350 91% 70%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 350 60% 25%;
+    --input: 350 60% 25%;
+    --ring: 350 91% 70%;
+  }
+
+  .sidebar {
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+/* Base styles */
+* {
+  border-color: hsl(var(--border));
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+body {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  margin: 0;
+  padding: 0;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+
+/* Chat styling */
+.message-list {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  -ms-overflow-style: thin;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.message-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary) / 0.3);
+  border-radius: 3px;
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--primary) / 0.5);
+}
+
+/* Twitch chat specific styling */
+.chat-message-username {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.chat-message-text {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.chat-message-time {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.chat-container {
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  max-height: none;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat input styling */
+.chat-container input {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border) / 0.8);
+  color: hsl(var(--foreground));
+}
+
+.chat-container input::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Chat message alignment styles */
+.text-right .chat-message-text {
+  text-align: right;
+}
+
+/* ===== WHATSAPP STYLE ===== */
+.whatsapp {
+  position: relative;
+  border-radius: 0.75rem 0.75rem 0.75rem 0;
+  padding: 0.5rem 0.75rem;
+  margin: 0.25rem 0;
+  background-color: #ffffff;
+  color: #303030;
+  box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+  max-width: 80%;
+}
+
+.whatsapp::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  background-color: #ffffff;
+  clip-path: polygon(0 0, 100% 100%, 100% 0);
+}
+
+.whatsapp.sender {
+  background-color: #dcf8c6;
+  border-radius: 0.75rem 0.75rem 0 0.75rem;
+}
+
+.whatsapp.sender::before {
+  right: -8px;
+  left: auto;
+  background-color: #dcf8c6;
+  clip-path: polygon(0 0, 0 100%, 100% 0);
+}
+
+.whatsapp .chat-message-time {
+  color: #8c8c8c;
+  font-size: 0.65rem;
+  margin-left: 4px;
+}
+
+.whatsapp .chat-message-username {
+  font-weight: 600;
+  color: #075e54;
+}
+
+/* WhatsApp dark mode */
+.dark .whatsapp {
+  background-color: #202c33;
+  color: #e9edef;
+}
+
+.dark .whatsapp::before {
+  background-color: #202c33;
+}
+
+.dark .whatsapp.sender {
+  background-color: #005c4b;
+}
+
+.dark .whatsapp.sender::before {
+  background-color: #005c4b;
+}
+
+.dark .whatsapp .chat-message-time {
+  color: #8696a0;
+}
+
+.dark .whatsapp .chat-message-username {
+  color: #53bdeb;
+}
+
+/* ===== TWITCH STYLE ===== */
+.twitch {
+  padding: 0.5rem 0;
+  width: 100%;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.twitch .chat-message-username {
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+
+.twitch .chat-message-text {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.twitch .badge {
+  margin-right: 4px;
+  border-radius: 3px;
+  padding: 2px;
+}
+
+/* ===== DISCORD STYLE ===== */
+.discord {
+  border-radius: 0;
+  padding: 0.1rem 0 0.5rem 0;
+  margin: 0;
+  width: 100%;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.discord .chat-message-username {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ffffff;
+  background: none !important;
+  padding: 0;
+  margin-right: 0.5rem;
+  box-shadow: none;
+}
+
+.discord .chat-message-text {
+  font-size: 1rem;
+  line-height: 1.375rem;
+  color: #dcddde;
+  white-space: pre-wrap;
+}
+
+.discord .chat-message-time {
+  font-size: 0.75rem;
+  color: #a3a6aa;
+  margin-left: 0.5rem;
+}
+
+.discord .badge {
+  background-color: transparent !important;
+  box-shadow: none;
+  padding: 0;
+  margin-right: 0.25rem;
+}
+
+.discord .badge svg {
+  color: #5865f2;
+}
+
+/* Discord light theme */
+.light .discord {
+  background-color: transparent;
+}
+
+.light .discord .chat-message-username {
+  color: #060607;
+}
+
+.light .discord .chat-message-text {
+  color: #2e3338;
+}
+
+.light .discord .chat-message-time {
+  color: #747f8d;
+}
+
+/* ===== TELEGRAM STYLE ===== */
+.telegram {
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  margin: 0.25rem 0;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  max-width: 80%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.telegram.sender {
+  background-color: #eeffde;
+}
+
+.telegram .chat-message-username {
+  font-weight: 600;
+  color: #3a8ef0;
+  background: none !important;
+  padding: 0;
+  box-shadow: none;
+}
+
+.telegram .chat-message-text {
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
+}
+
+.telegram .chat-message-time {
+  color: #8d969c;
+  font-size: 0.75rem;
+}
+
+/* Telegram dark mode */
+.dark .telegram {
+  background-color: #212121;
+  color: #ffffff;
+}
+
+.dark .telegram.sender {
+  background-color: #2b5278;
+}
+
+.dark .telegram .chat-message-username {
+  color: #58bff5;
+}
+
+.dark .telegram .chat-message-time {
+  color: #8d969c;
+}
+
+/* ===== CLASSIC STYLE ===== */
+.classic {
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
+.classic .chat-message-username {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.classic .chat-message-text {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* ===== COMPACT STYLE ===== */
+.compact {
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.compact .chat-message-username {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.compact .chat-message-text {
+  font-size: 0.875rem;
+  display: inline;
+}
+
+/* Light theme styles */
+.light .chat-container {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(229, 229, 229, 0.7);
+}
+
+/* Light Blue theme styles */
+.light-blue .chat-container {
+  background-color: rgba(240, 249, 255, 0.9);
+  border: 1px solid rgba(186, 230, 253, 0.7);
+}
+
+/* Light Green theme styles */
+.light-green .chat-container {
+  background-color: rgba(240, 253, 244, 0.9);
+  border: 1px solid rgba(187, 247, 208, 0.7);
+}
+
+/* Dark theme styles */
+.dark .chat-container {
+  background-color: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+}
+
+/* Dark Blue theme styles */
+.blue .chat-container {
+  background-color: rgba(15, 43, 90, 0.9);
+  border: 1px solid rgba(30, 64, 175, 0.7);
+}
+
+/* Dark Purple theme styles */
+.purple .chat-container {
+  background-color: rgba(76, 29, 149, 0.9);
+  border: 1px solid rgba(107, 33, 168, 0.7);
+}
+
+/* Dark Red theme styles */
+.red .chat-container {
+  background-color: rgba(159, 18, 57, 0.9);
+  border: 1px solid rgba(190, 18, 60, 0.7);
+}
+
+/* Ensure text colors are properly set for all themes */
+.light .text-foreground {
+  color: hsl(222.2 47.4% 11.2%);
+}
+
+.light .text-muted-foreground {
+  color: hsl(215.4 16.3% 46.9%);
+}
+
+.light-blue .text-foreground {
+  color: hsl(217 60% 10%);
+}
+
+.light-blue .text-muted-foreground {
+  color: hsl(217 60% 35%);
+}
+
+.light-green .text-foreground {
+  color: hsl(150 60% 10%);
+}
+
+.light-green .text-muted-foreground {
+  color: hsl(150 60% 35%);
+}
+
+.dark .text-foreground {
+  color: hsl(210 40% 98%);
+}
+
+.dark .text-muted-foreground {
+  color: hsl(215 20.2% 65.1%);
+}
+
+.blue .text-foreground {
+  color: hsl(213 100% 96%);
+}
+
+.blue .text-muted-foreground {
+  color: hsl(213 70% 85%);
+}
+
+.purple .text-foreground {
+  color: hsl(270 100% 96%);
+}
+
+.purple .text-muted-foreground {
+  color: hsl(270 70% 85%);
+}
+
+.red .text-foreground {
+  color: hsl(350 100% 96%);
+}
+
+.red .text-muted-foreground {
+  color: hsl(350 70% 85%);
+}
+
+/* Twitch gradient for headers */
+.twitch-gradient {
+  background: linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
+}
+
+/* Theme transition for smoother theme changes */
+:root {
+  transition: color-scheme 0.15s ease, background-color 0.15s ease;
+}
+
+/* Apply transitions to specific properties for better performance */
+:root.dark,
+:root:not(.dark) {
+  --theme-transition: 0.15s ease;
+}
+
+/* Apply transitions to specific elements rather than all elements */
+body, button, input, select, textarea,
+.bg-background, .bg-card, .bg-muted, .bg-primary,
+.text-foreground, .text-muted-foreground, .text-primary,
+.border-border, .border-primary, .border-muted {
+  transition: background-color var(--theme-transition),
+              border-color var(--theme-transition),
+              color var(--theme-transition),
+              fill var(--theme-transition),
+              stroke var(--theme-transition);
+}
+
+/* Keyboard shortcut dialog styles */
+.keyboard-shortcut-dialog {
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.keyboard-shortcut-content {
+  overflow-y: auto;
+  flex: 1;
+  max-height: 50vh;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary) / 0.3) transparent;
+}
+
+/* Animation for saved voice highlight */
+@keyframes highlight-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.highlight-saved {
+  animation: highlight-pulse 2s ease-out;
+  transition: all 0.3s ease;
+}
+
+
+
+/* ===== CHAT BUBBLE STYLES ===== */
+.chat-bubble {
+  display: flex;
+  position: relative;
+}
+
+/* ===== CHAT BUBBLE BASE STYLES ===== */
+.chat-message-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.chat-message-container.left {
+  justify-content: flex-start;
+}
+
+.chat-message-container.right {
+  justify-content: flex-end;
+}
+
+.chat-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.chat-avatar.left {
+  margin-right: 8px;
+  order: 1;
+}
+
+.chat-avatar.right {
+  margin-left: 8px;
+  order: 2;
+}
+
+.chat-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+}
+
+.chat-content.left {
+  align-items: flex-start;
+  order: 2;
+}
+
+.chat-content.right {
+  align-items: flex-end;
+  order: 1;
+}
+
+.chat-username {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.chat-bubble {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  word-break: break-word;
+}
+
+.chat-timestamp {
+  font-size: 0.6875rem;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+/* ===== WHATSAPP STYLE ===== */
+/* WhatsApp container */
+.whatsapp-container {
+  display: flex;
+  width: 100%;
+  padding: 6px 10px;
+  position: relative;
+  margin-bottom: 1px;
+}
+
+.whatsapp-container:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.whatsapp-container.left {
+  justify-content: flex-start;
+}
+
+.whatsapp-container.right {
+  justify-content: flex-end;
+}
+
+/* WhatsApp avatar */
+.whatsapp-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.whatsapp-container.right .whatsapp-avatar {
+  margin-right: 0;
+  margin-left: 10px;
+  order: 2;
+}
+
+.whatsapp-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* WhatsApp message content */
+.whatsapp-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 65%;
+}
+
+/* WhatsApp message bubble */
+.whatsapp-bubble {
+  background-color: #ffffff; /* Default color for general audience */
+  border-radius: 7.5px;
+  padding: 6px 7px 8px 9px;
+  box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+  position: relative;
+  margin-bottom: 1px;
+}
+
+/* Role-based colors for WhatsApp */
+.whatsapp-bubble.mod-role {
+  background-color: #d1f4ff; /* Moderator color */
+}
+
+.whatsapp-bubble.vip-role {
+  background-color: #ffd1f4; /* VIP color */
+}
+
+.whatsapp-bubble.sub-role {
+  background-color: #fff0d1; /* Subscriber color */
+}
+
+.whatsapp-bubble.owner-role {
+  background-color: #e1ffd7; /* Owner/current user color (WhatsApp green) */
+}
+
+/* WhatsApp username */
+.whatsapp-username {
+  font-size: 12.5px;
+  font-weight: 500;
+  margin-bottom: 0px;
+  color: #e91e63;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.whatsapp-username.mod-role {
+  color: #2196f3;
+}
+
+.whatsapp-username.vip-role {
+  color: #9c27b0;
+}
+
+.whatsapp-username.sub-role {
+  color: #ff9800;
+}
+
+/* WhatsApp message text */
+.whatsapp-message {
+  font-size: 14px;
+  line-height: 19px;
+  color: #111b21;
+  word-break: break-word;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* WhatsApp timestamp */
+.whatsapp-time {
+  font-size: 11px;
+  color: #667781;
+  margin-left: 4px;
+  align-self: flex-end;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* WhatsApp dark mode */
+.dark .whatsapp-container:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.dark .whatsapp-bubble {
+  background-color: #202c33; /* Default dark color for general audience */
+  color: #e9edef;
+}
+
+.dark .whatsapp-bubble.owner-role {
+  background-color: #005c4b; /* Owner/current user dark color */
+}
+
+.dark .whatsapp-bubble.mod-role {
+  background-color: #0b3a44; /* Moderator dark color */
+}
+
+.dark .whatsapp-bubble.vip-role {
+  background-color: #3b0b44; /* VIP dark color */
+}
+
+.dark .whatsapp-bubble.sub-role {
+  background-color: #3a2e0b; /* Subscriber dark color */
+}
+
+.dark .whatsapp-message {
+  color: #e9edef;
+}
+
+.dark .whatsapp-time {
+  color: #8696a0;
+}
+
+/* ===== TELEGRAM STYLE ===== */
+/* Telegram container */
+.telegram-container {
+  display: flex;
+  width: 100%;
+  padding: 4px 16px;
+  position: relative;
+  margin-bottom: 2px;
+}
+
+.telegram-container.left {
+  justify-content: flex-start;
+}
+
+.telegram-container.right {
+  justify-content: flex-end;
+}
+
+/* Telegram avatar */
+.telegram-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+  flex-shrink: 0;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.telegram-avatar.mod-role {
+  background-color: #2196f3;
+}
+
+.telegram-avatar.vip-role {
+  background-color: #e91e63;
+}
+
+.telegram-avatar.sub-role {
+  background-color: #ff9800;
+}
+
+.telegram-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Telegram message content */
+.telegram-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+/* Telegram message bubble */
+.telegram-bubble {
+  background-color: #ffffff; /* Default color for general audience */
+  border-radius: 12px 12px 12px 0;
+  padding: 8px 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin-bottom: 1px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.telegram-container.right .telegram-bubble {
+  border-radius: 12px 12px 0 12px;
+}
+
+/* Role-based colors for Telegram */
+.telegram-bubble.owner-role {
+  background-color: #deffc2; /* Owner/current user color (Telegram green) */
+}
+
+.telegram-bubble.mod-role {
+  background-color: #e3f2fd; /* Moderator color */
+}
+
+.telegram-bubble.vip-role {
+  background-color: #fce4ec; /* VIP color */
+}
+
+.telegram-bubble.sub-role {
+  background-color: #fff8e1; /* Subscriber color */
+}
+
+/* Telegram username */
+.telegram-username {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #3a8ef0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.telegram-username.mod-role {
+  color: #2196f3;
+}
+
+.telegram-username.vip-role {
+  color: #e91e63;
+}
+
+.telegram-username.sub-role {
+  color: #ff9800;
+}
+
+/* Telegram message text */
+.telegram-message {
+  font-size: 14px;
+  line-height: 18px;
+  color: #000000;
+  word-break: break-word;
+}
+
+/* Telegram timestamp */
+.telegram-time {
+  font-size: 12px;
+  color: #8d969c;
+  margin-top: 2px;
+  align-self: flex-end;
+  display: inline-block;
+}
+
+.telegram-container.right .telegram-time {
+  display: flex;
+  align-items: center;
+}
+
+.telegram-container.right .telegram-time svg {
+  margin-left: 4px;
+  width: 16px;
+  height: 16px;
+  color: #4fae4e;
+}
+
+/* Telegram date divider */
+.telegram-date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 8px 0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.telegram-date-pill {
+  background-color: rgba(116, 127, 141, 0.7);
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+/* Telegram dark mode */
+.dark .telegram-container {
+  background-color: #0f0f0f;
+}
+
+.dark .telegram-bubble {
+  background-color: #212121; /* Default dark color for general audience */
+  color: #ffffff;
+}
+
+.dark .telegram-bubble.owner-role {
+  background-color: #2b5278; /* Owner/current user dark color */
+}
+
+.dark .telegram-bubble.mod-role {
+  background-color: #0d47a1; /* Moderator dark color */
+}
+
+.dark .telegram-bubble.vip-role {
+  background-color: #880e4f; /* VIP dark color */
+}
+
+.dark .telegram-bubble.sub-role {
+  background-color: #e65100; /* Subscriber dark color */
+}
+
+.dark .telegram-message {
+  color: #ffffff;
+}
+
+.dark .telegram-time {
+  color: #a0a0a0;
+}
+
+/* ===== DISCORD STYLE ===== */
+.discord-container {
+  margin-bottom: 0.5rem;
+}
+
+.discord-avatar {
+  width: 40px;
+  height: 40px;
+  margin-right: 16px;
+}
+
+.discord-content {
+  flex: 1;
+}
+
+.discord-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.discord-username {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 8px;
+  color: #ffffff;
+}
+
+.discord-username.mod-role {
+  color: #20b46a;
+}
+
+.discord-username.vip-role {
+  color: #9b59b6;
+}
+
+.discord-username.sub-role {
+  color: #f47fff;
+}
+
+.discord-badges {
+  display: flex;
+  margin-right: 8px;
+}
+
+.discord-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 4px;
+  margin-right: 4px;
+  border-radius: 3px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.discord-badge.mod-badge {
+  background-color: #20b46a;
+}
+
+.discord-badge.vip-badge {
+  background-color: #9b59b6;
+}
+
+.discord-badge.sub-badge {
+  background-color: #f47fff;
+}
+
+.discord-time {
+  font-size: 0.75rem;
+  color: #a3a6aa;
+}
+
+.discord-message {
+  font-size: 1rem;
+  line-height: 1.375rem;
+  color: #dcddde;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Discord light theme */
+.light .discord-username {
+  color: #060607;
+}
+
+.light .discord-message {
+  color: #2e3338;
+}
+
+.light .discord-time {
+  color: #747f8d;
+}
+
+/* ===== TWITCH STYLE ===== */
+.twitch-container {
+  margin-bottom: 0.5rem;
+}
+
+.twitch-message-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 4px 8px;
+}
+
+.twitch-message-row:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.twitch-badges {
+  display: flex;
+  margin-right: 4px;
+}
+
+.twitch-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  border-radius: 3px;
+}
+
+.twitch-badge.mod-badge {
+  background-color: #00ad03;
+  color: white;
+}
+
+.twitch-badge.vip-badge {
+  background-color: #e005b9;
+  color: white;
+}
+
+.twitch-badge.sub-badge {
+  background-color: #9147ff;
+  color: white;
+}
+
+.twitch-username {
+  font-weight: 700;
+  margin-right: 4px;
+  color: #ffffff;
+}
+
+.twitch-username.mod-role {
+  color: #00ad03;
+}
+
+.twitch-username.vip-role {
+  color: #e005b9;
+}
+
+.twitch-username.sub-role {
+  color: #9147ff;
+}
+
+.twitch-colon {
+  margin-right: 4px;
+  color: #efeff1;
+}
+
+.twitch-message {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: #efeff1;
+  word-break: break-word;
+}
+
+.twitch-time {
+  margin-left: 8px;
+  font-size: 0.75rem;
+  color: #adadb8;
+}
+
+/* Twitch light theme */
+.light .twitch-message-row:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.light .twitch-username {
+  color: #000000;
+}
+
+.light .twitch-username.mod-role {
+  color: #00ad03;
+}
+
+.light .twitch-username.vip-role {
+  color: #e005b9;
+}
+
+.light .twitch-username.sub-role {
+  color: #9147ff;
+}
+
+.light .twitch-colon {
+  color: #0e0e10;
+}
+
+.light .twitch-message {
+  color: #0e0e10;
+}
+
+.light .twitch-time {
+  color: #53535f;
+}
+
+/* ===== CLASSIC STYLE ===== */
+.chat-bubble.classic {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  padding: 8px 12px;
+}
+
+.chat-username.classic {
+  color: hsl(var(--primary));
+}
+
+.chat-username.classic.mod-role {
+  color: #00ad03;
+}
+
+.chat-username.classic.vip-role {
+  color: #e005b9;
+}
+
+.chat-username.classic.sub-role {
+  color: #ff6f00;
+}
+
+.chat-timestamp.classic {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+}
+
+/* ===== COMPACT STYLE ===== */
+.compact-container {
+  margin-bottom: 0.25rem;
+}
+
+.compact-message-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 2px 8px;
+  font-size: 0.875rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
+}
+
+.compact-badges {
+  display: flex;
+  margin-right: 4px;
+}
+
+.compact-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-right: 2px;
+  border-radius: 2px;
+}
+
+.compact-badge.mod-badge {
+  background-color: #00ad03;
+  color: white;
+}
+
+.compact-badge.vip-badge {
+  background-color: #e005b9;
+  color: white;
+}
+
+.compact-badge.sub-badge {
+  background-color: #9147ff;
+  color: white;
+}
+
+.compact-username {
+  font-weight: 600;
+  margin-right: 4px;
+  color: hsl(var(--primary));
+}
+
+.compact-username.mod-role {
+  color: #00ad03;
+}
+
+.compact-username.vip-role {
+  color: #e005b9;
+}
+
+.compact-username.sub-role {
+  color: #9147ff;
+}
+
+.compact-message {
+  color: hsl(var(--foreground));
+  word-break: break-word;
+}
+
+.compact-time {
+  margin-left: 4px;
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Discord style chat bubble */
+.chat-bubble.discord {
+  display: flex;
+  padding: 0.25rem 1rem;
+  width: 100%;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin-bottom: 0.5rem;
+}
+
+.discord-avatar {
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.discord-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.discord-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.discord-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.discord-username {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  color: #ffffff;
+}
+
+.discord-username.mod-role {
+  color: #20b46a;
+}
+
+.discord-username.vip-role {
+  color: #9b59b6;
+}
+
+.discord-username.sub-role {
+  color: #f47fff;
+}
+
+.discord-badges {
+  display: flex;
+  margin-right: 0.5rem;
+}
+
+.discord-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 4px;
+  margin-right: 4px;
+  border-radius: 3px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.discord-badge.mod-badge {
+  background-color: #20b46a;
+}
+
+.discord-badge.vip-badge {
+  background-color: #9b59b6;
+}
+
+.discord-badge.sub-badge {
+  background-color: #f47fff;
+}
+
+.discord-time {
+  font-size: 0.75rem;
+  color: #a3a6aa;
+}
+
+.discord-message {
+  font-size: 1rem;
+  line-height: 1.375rem;
+  color: #dcddde;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Discord hover effect */
+.chat-bubble.discord:hover {
+  background-color: rgba(4, 4, 5, 0.07);
+}
+
+.dark .chat-bubble.discord:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Discord light theme */
+.light .chat-bubble.discord .discord-username {
+  color: #060607;
+}
+
+.light .chat-bubble.discord .discord-username.mod-role {
+  color: #20b46a;
+}
+
+.light .chat-bubble.discord .discord-username.vip-role {
+  color: #9b59b6;
+}
+
+.light .chat-bubble.discord .discord-username.sub-role {
+  color: #e91e63;
+}
+
+.light .chat-bubble.discord .discord-message {
+  color: #2e3338;
+}
+
+.light .chat-bubble.discord .discord-time {
+  color: #747f8d;
+}
+
+/* Twitch style chat bubble */
+.chat-bubble.twitch {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  font-family: Inter, system-ui, sans-serif;
+  position: relative;
+}
+
+.chat-bubble.twitch:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.twitch-badges {
+  display: flex;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.twitch-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 0.25rem;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.twitch-badge.mod-badge {
+  background-color: #00ad03;
+  color: white;
+}
+
+.twitch-badge.vip-badge {
+  background-color: #e005b9;
+  color: white;
+}
+
+.twitch-badge.sub-badge {
+  background-color: #9147ff;
+  color: white;
+}
+
+.twitch-username {
+  font-weight: 700;
+  margin-right: 0.25rem;
+  position: relative;
+  display: inline-block;
+}
+
+.twitch-username.mod-role {
+  color: #00ad03;
+}
+
+.twitch-username.vip-role {
+  color: #e005b9;
+}
+
+.twitch-username.sub-role {
+  color: #9147ff;
+}
+
+.twitch-colon {
+  margin-right: 0.5rem;
+  color: #efeff1;
+}
+
+.twitch-message-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  word-break: break-word;
+}
+
+.twitch-message {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: #efeff1;
+  word-break: break-word;
+}
+
+.twitch-time {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: #adadb8;
+  flex-shrink: 0;
+}
+
+/* Twitch emote styles removed */
+
+/* Twitch light theme */
+.light .chat-bubble.twitch:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.light .twitch-colon {
+  color: #0e0e10;
+}
+
+.light .twitch-message {
+  color: #0e0e10;
+}
+
+.light .twitch-time {
+  color: #53535f;
+}
+
+/* Classic style chat bubble */
+.chat-bubble.classic {
+  display: flex;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
+  width: 100%;
+}
+
+.classic-avatar {
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.classic-avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.classic-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.classic-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.classic-badges {
+  display: flex;
+  margin-right: 0.25rem;
+}
+
+.classic-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 0.25rem;
+  border-radius: 3px;
+}
+
+.classic-badge.mod-badge {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.classic-badge.vip-badge {
+  background-color: #9b59b6;
+  color: white;
+}
+
+.classic-badge.sub-badge {
+  background-color: #e91e63;
+  color: white;
+}
+
+.classic-username {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.classic-time {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.classic-message {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
+}
+
+/* Compact style chat bubble */
+.chat-bubble.compact {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 1rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.compact .classic-badges {
+  margin-right: 0.25rem;
+}
+
+.compact .classic-badge {
+  width: 14px;
+  height: 14px;
+  margin-right: 0.25rem;
+}
+
+.compact .classic-username {
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+.compact .classic-time {
+  font-size: 0.7rem;
+}
+
+.compact .classic-message {
+  font-size: 0.875rem;
+  display: inline;
+}
+
+/* Modern layout styles */
+@media (max-width: 768px) {
+  .md\:w-\[70\%\], .md\:w-\[30\%\] {
+    width: 100% !important;
+  }
+}
+
+/* Ensure full height for the main content */
+.h-full {
+  height: 100%;
+}
+
+/* Ensure the chat container takes full height */
+.chat-list-container {
+  min-height: 300px;
+}
+
+/* Modern tab styling */
+.tabs-list {
+  display: flex;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+}
+
+.tab-trigger {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tab-trigger[data-state="active"] {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
