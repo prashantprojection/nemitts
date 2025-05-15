@@ -452,12 +452,7 @@ export class TwitchAuthService {
   }
 
   public async logout(): Promise<void> {
-    // Also log out from Supabase if connected
-    try {
-      await supabase.auth.signOut();
-    } catch (error) {
-      // Silent catch - Supabase errors shouldn't block logout
-    }
+    // No need to log out from Supabase anymore
 
     // Clear the validation interval
     if (this.validationInterval) {
@@ -623,36 +618,8 @@ export class TwitchAuthService {
             this.state.profileImageUrl = userInfo.profileImageUrl;
             debugLog('Got profile image URL', this.state.profileImageUrl);
 
-            // Try to sign in to Supabase with Twitch token
-            try {
-              // Connect to Supabase
-              debugLog('Attempting to sign in to Supabase');
-              const { error } = await supabase.auth.signInWithPassword({
-                email: `${userInfo.username}@twitch.user`, // Create a pseudo-email
-                password: accessToken.substring(0, 20) // Use part of the token as password
-              });
-
-              if (error) {
-                debugLog('Supabase sign in failed, trying to create user', error);
-                // If sign in fails, try to create the user
-                const signUpResult = await supabase.auth.signUp({
-                  email: `${userInfo.username}@twitch.user`,
-                  password: accessToken.substring(0, 20),
-                  options: {
-                    data: {
-                      twitch_username: userInfo.username,
-                      profile_image_url: userInfo.profileImageUrl
-                    }
-                  }
-                });
-                debugLog('Supabase sign up result', { success: !signUpResult.error });
-              } else {
-                debugLog('Supabase sign in successful');
-              }
-            } catch (error) {
-              // Log but continue - Supabase errors shouldn't block the Twitch login
-              debugLog('Error with Supabase authentication', error);
-            }
+            // No longer need to sign in to Supabase
+            debugLog('Skipping Supabase authentication - using local storage instead');
 
             // Save auth state to localStorage for persistence
             debugLog('Saving auth state to storage', this.state);
@@ -778,8 +745,8 @@ export class TwitchAuthService {
     saveAuthState(this.state, this.stateKey);
     this.notifyStateChange();
 
-    // Update user settings in Supabase if logged in
-    updateUserSettings(this.state);
+    // No longer need to update user settings in Supabase
+    // Local storage is used instead
   }
 
   /**

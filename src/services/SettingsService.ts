@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+// Supabase import removed - using localStorage instead
 import { debounce } from '@/utils/debounce';
 import LocalStorageManager from './LocalStorageManager';
 
@@ -99,48 +99,40 @@ class SettingsService {
     if (!this.userId) return;
 
     try {
-      // Load theme settings
-      const { data: themeSettings } = await supabase
-        .from('theme_settings')
-        .select('*')
-        .eq('user_id', this.userId);
-
-      if (themeSettings && themeSettings.length > 0) {
-        this.settingsCache.set('theme_settings', themeSettings);
-        this.notifyListeners('theme_settings', themeSettings);
-      }
-
-      // Load voice settings
-      const { data: voiceSettings } = await supabase
-        .from('voice_settings')
-        .select('*')
-        .eq('user_id', this.userId)
-        .single();
-
+      // Load voice settings from localStorage
+      const voiceSettings = LocalStorageManager.loadVoiceSettings();
       if (voiceSettings) {
         this.settingsCache.set('voice_settings', voiceSettings);
         this.notifyListeners('voice_settings', voiceSettings);
       }
 
-      // Load filter settings
-      const { data: filterSettings } = await supabase
-        .from('filter_settings')
-        .select('*')
-        .eq('user_id', this.userId)
-        .single();
-
+      // Load filter settings from localStorage
+      const filterSettings = LocalStorageManager.loadFilterSettings();
       if (filterSettings) {
         this.settingsCache.set('filter_settings', filterSettings);
         this.notifyListeners('filter_settings', filterSettings);
       }
 
-      // Bubble settings loading removed
+      // Load theme settings from localStorage
+      const themeSettingsStr = localStorage.getItem('theme_settings');
+      if (themeSettingsStr) {
+        const themeSettings = JSON.parse(themeSettingsStr);
+        this.settingsCache.set('theme_settings', themeSettings);
+        this.notifyListeners('theme_settings', themeSettings);
+      }
+
+      // Load OBS settings from localStorage
+      const obsSettings = LocalStorageManager.loadObsSettings();
+      if (obsSettings) {
+        this.settingsCache.set('obs_settings', obsSettings);
+        this.notifyListeners('obs_settings', obsSettings);
+      }
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error('Error loading settings from localStorage:', error);
     }
   }
 
-  // Get settings from cache, LocalStorageManager, or Supabase
+  // Get settings from cache or LocalStorageManager
   async getSettings<T extends BaseSettings>(settingsType: string, defaultSettings: T): Promise<T> {
     // First check cache for fastest access
     if (this.settingsCache.has(settingsType)) {
@@ -171,7 +163,7 @@ class SettingsService {
         // If user is logged in, still fetch from Supabase in the background
         // to ensure we have the latest settings, but return local settings immediately
         if (this.userId) {
-          this.fetchSettingsFromSupabase(settingsType).then(supabaseSettings => {
+          this.fetchSettingsFromStorage(settingsType).then(supabaseSettings => {
             if (supabaseSettings) {
               // If the Supabase settings are newer, update the cache and localStorage
               const localUpdatedAt = new Date(localSettings.timestamp || localSettings.updated_at || 0);
@@ -203,10 +195,10 @@ class SettingsService {
       console.error(`Error loading ${settingsType} from LocalStorageManager:`, error);
     }
 
-    // If not in localStorage and user is logged in, try Supabase
+    // If not in localStorage and user is logged in, try to load from storage
     if (this.userId) {
       try {
-        const supabaseSettings = await this.fetchSettingsFromSupabase(settingsType);
+        const supabaseSettings = await this.fetchSettingsFromStorage(settingsType);
         if (supabaseSettings) {
           // Save to cache and localStorage for future fast access
           this.settingsCache.set(settingsType, supabaseSettings);
@@ -236,26 +228,33 @@ class SettingsService {
     return settingsWithDefaults;
   }
 
-  // Fetch settings from Supabase
-  private async fetchSettingsFromSupabase<T extends BaseSettings>(settingsType: string): Promise<T | null> {
+  // Fetch settings from localStorage (replaces Supabase)
+  private async fetchSettingsFromStorage<T extends BaseSettings>(settingsType: string): Promise<T | null> {
     if (!this.userId) return null;
 
     try {
-      const { data, error } = await supabase
-        .from(settingsType)
-        .select('*')
-        .eq('user_id', this.userId)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data as T;
+      // Use the appropriate LocalStorageManager method based on settings type
+      if (settingsType === 'voice_settings') {
+        return LocalStorageManager.loadVoiceSettings() as T;
+      } else if (settingsType === 'filter_settings') {
+        return LocalStorageManager.loadFilterSettings() as T;
+      } else if (settingsType === 'obs_settings') {
+        return LocalStorageManager.loadObsSettings() as T;
+      } else {
+        // For other settings types, fall back to generic localStorage
+        const storedSettings = localStorage.getItem(settingsType);
+        if (storedSettings) {
+          return JSON.parse(storedSettings) as T;
+        }
+      }
+      return null;
     } catch (error) {
-      console.error(`Error fetching ${settingsType} from Supabase:`, error);
+      console.error(`Error fetching ${settingsType} from localStorage:`, error);
       return null;
     }
   }
 
-  // Save settings to LocalStorageManager and Supabase
+  // Save settings to LocalStorageManager
   async saveSettings<T extends BaseSettings>(settingsType: string, settings: T): Promise<boolean> {
     // Update timestamps
     const now = new Date().toISOString();
@@ -300,11 +299,11 @@ class SettingsService {
       return false;
     }
 
-    // Then save to Supabase in the background if user is logged in
+    // Then save to localStorage in the background if user is logged in
     if (this.userId) {
       // Don't await this - let it happen in the background
-      this.saveToSupabase(settingsType, settingsWithTimestamps).catch(error => {
-        console.error(`Error saving ${settingsType} to Supabase:`, error);
+      this.saveToStorage(settingsType, settingsWithTimestamps).catch(error => {
+        console.error(`Error saving ${settingsType} to localStorage:`, error);
       });
     }
 
@@ -312,8 +311,8 @@ class SettingsService {
     return true;
   }
 
-  // Save settings to Supabase
-  private async saveToSupabase<T extends BaseSettings>(settingsType: string, settings: T): Promise<boolean> {
+  // Save settings to localStorage (replaces Supabase)
+  private async saveToStorage<T extends BaseSettings>(settingsType: string, settings: T): Promise<boolean> {
     if (!this.userId) return false;
 
     try {
@@ -322,75 +321,28 @@ class SettingsService {
         user_id: this.userId
       };
 
-      // If settings has an ID, update it, otherwise insert it
-      if (settings.id) {
-        const { error } = await supabase
-          .from(settingsType)
-          .update(settingsWithUser)
-          .eq('id', settings.id);
-
-        if (error) throw error;
-      } else {
-        // First check if a record already exists for this user
-        const { data, error: fetchError } = await supabase
-          .from(settingsType)
-          .select('id')
-          .eq('user_id', this.userId)
-          .maybeSingle();
-
-        if (fetchError) throw fetchError;
-
-        if (data?.id) {
-          // Update existing record
-          const { error } = await supabase
-            .from(settingsType)
-            .update(settingsWithUser)
-            .eq('id', data.id);
-
-          if (error) throw error;
-
-          // Update the ID in cache and storage
-          settingsWithUser.id = data.id;
-          this.settingsCache.set(settingsType, settingsWithUser);
-
-          // Save to the appropriate storage based on settings type
-          if (settingsType === 'voice_settings') {
-            LocalStorageManager.saveVoiceSettings(settingsWithUser);
-          } else if (settingsType === 'filter_settings') {
-            LocalStorageManager.saveFilterSettings(settingsWithUser);
-          } else {
-            localStorage.setItem(settingsType, JSON.stringify(settingsWithUser));
-          }
-        } else {
-          // Insert new record
-          const { data: insertData, error } = await supabase
-            .from(settingsType)
-            .insert(settingsWithUser)
-            .select('id')
-            .single();
-
-          if (error) throw error;
-
-          // Update the ID in cache and storage
-          if (insertData?.id) {
-            settingsWithUser.id = insertData.id;
-            this.settingsCache.set(settingsType, settingsWithUser);
-
-            // Save to the appropriate storage based on settings type
-            if (settingsType === 'voice_settings') {
-              LocalStorageManager.saveVoiceSettings(settingsWithUser);
-            } else if (settingsType === 'filter_settings') {
-              LocalStorageManager.saveFilterSettings(settingsWithUser);
-            } else {
-              localStorage.setItem(settingsType, JSON.stringify(settingsWithUser));
-            }
-          }
-        }
+      // Generate an ID if not present
+      if (!settingsWithUser.id) {
+        settingsWithUser.id = Date.now().toString(36) + Math.random().toString(36).substring(2);
       }
 
-      return true;
+      // Update the cache
+      this.settingsCache.set(settingsType, settingsWithUser);
+
+      // Save to the appropriate storage based on settings type
+      if (settingsType === 'voice_settings') {
+        return LocalStorageManager.saveVoiceSettings(settingsWithUser);
+      } else if (settingsType === 'filter_settings') {
+        return LocalStorageManager.saveFilterSettings(settingsWithUser);
+      } else if (settingsType === 'obs_settings') {
+        return LocalStorageManager.saveObsSettings(settingsWithUser);
+      } else {
+        // For other settings types, fall back to generic localStorage
+        localStorage.setItem(settingsType, JSON.stringify(settingsWithUser));
+        return true;
+      }
     } catch (error) {
-      console.error(`Error saving ${settingsType} to Supabase:`, error);
+      console.error(`Error saving ${settingsType} to localStorage:`, error);
       return false;
     }
   }

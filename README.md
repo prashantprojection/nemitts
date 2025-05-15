@@ -1,6 +1,6 @@
-# Twitch TTS Reader
+# Nemitts TTS System - Free SaaS Edition
 
-A web application that reads Twitch chat messages using text-to-speech (TTS) technology. Never miss an important message while streaming!
+A free web application that reads Twitch chat messages using text-to-speech (TTS) technology. This version has been modified to be completely free, with all premium features made available to everyone and no subscription or payment required.
 
 ## Documentation
 
@@ -17,9 +17,10 @@ A web application that reads Twitch chat messages using text-to-speech (TTS) tec
 - Customizable voice settings
 - Message filtering options (skip emotes, links, bot messages)
 - User-specific voice assignments
-- Persistent settings with Supabase integration
+- Persistent settings with localStorage
 - OBS browser source integration
-- Stream Deck plugin support
+- Multi-Zone Support for multiple TTS zones
+- Keyboard shortcuts for quick actions
 
 ## Technologies Used
 
@@ -30,7 +31,7 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
-- Supabase for backend storage
+- localStorage for data persistence
 - Twitch API integration
 
 ## Local Development
@@ -60,7 +61,6 @@ This project is built with:
 - Node.js 18+ installed
 - npm or yarn package manager
 - A Twitch Developer Application (for authentication)
-- A Supabase account and project
 
 ### Production Deployment
 
@@ -137,8 +137,8 @@ After deploying your application, you need to:
    - Try logging in with Twitch
    - Ensure you're redirected back to your application after authentication
 
-3. **Verify Supabase integration**:
-   - Check that settings are being saved to Supabase
+3. **Verify localStorage integration**:
+   - Check that settings are being saved to localStorage
    - Verify that user authentication is working correctly
 
 ## Troubleshooting
@@ -150,7 +150,6 @@ If you're experiencing authentication issues in production:
 1. Check browser console for errors
 2. Verify that your Twitch Developer Application has the correct redirect URI
 3. Clear browser cookies and local storage, then try again
-4. Ensure your Supabase configuration is correct
 
 ### Deployment Issues
 
