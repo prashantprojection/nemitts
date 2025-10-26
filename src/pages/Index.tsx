@@ -3,12 +3,14 @@ import { Suspense, useState, lazy } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import TwitchLogin from "@/components/TwitchLogin";
 import twitchAuthService from "@/services/twitch/TwitchAuthService";
+import { useSpeechService } from "@/contexts/SpeechServiceContext";
+import { useNavigate } from "react-router-dom";
 
 // Use ChatContainer directly instead of TTSChat
 import ChatContainer from "@/components/ChatContainer";
 import ChannelProfileSidebar from "@/components/ChannelProfileSidebar";
 import RightPanel from "@/components/RightPanel";
-import QuickVoiceAccess from "@/components/sidebar/QuickVoiceAccess"; // Add this import
+import QuickVoiceAccess from "@/components/sidebar/QuickVoiceAccess";
 
 // Lazy load the FAQ dialog
 const FAQDialog = lazy(() => import("@/components/FAQDialog"));
@@ -16,6 +18,9 @@ const FAQDialog = lazy(() => import("@/components/FAQDialog"));
 const Index = () => {
   const [showFAQDialog, setShowFAQDialog] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const speechService = useSpeechService();
+  const navigate = useNavigate();
 
   // Check login status on component mount
   React.useEffect(() => {
@@ -34,6 +39,28 @@ const Index = () => {
       twitchAuthService.removeStateChangeListener(handleAuthChange);
     };
   }, []);
+
+  // Effect to initialize mute state from speech service
+  React.useEffect(() => {
+    if (speechService) {
+      setIsMuted(speechService.isMuted);
+    }
+  }, [speechService]);
+
+  // Handler to toggle mute state
+  const handleMuteToggle = () => {
+    if (speechService) {
+      const newMuteState = !isMuted;
+      speechService.setMuteState(newMuteState);
+      setIsMuted(newMuteState);
+    }
+  };
+
+  // Handler to navigate to voice settings
+  const handleVoiceSettingsClick = () => {
+    // Dispatch an event to open the voice controls in the right panel
+    window.dispatchEvent(new CustomEvent('open-voice-controls'));
+  };
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-gradient-to-b from-background to-background/90 p-3">
@@ -66,7 +93,11 @@ const Index = () => {
           {/* Left Zone - Channel Profiles Sidebar - Always visible */}
           <div className="w-[25%] h-full flex-shrink-0 relative z-10 bg-card rounded-xl shadow-md overflow-hidden">
             {/* <ChannelProfileSidebar /> */}
-            <QuickVoiceAccess /> {/* Replace ChannelProfileSidebar with QuickVoiceAccess */}
+            <QuickVoiceAccess
+              isMuted={isMuted}
+              onMuteToggle={handleMuteToggle}
+              onVoiceSettingsClick={handleVoiceSettingsClick}
+            />
           </div>
 
           {/* Center Zone - Chat Container */}

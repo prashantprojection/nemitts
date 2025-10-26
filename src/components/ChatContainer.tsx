@@ -42,12 +42,12 @@ const ChatContainer = () => {
 
   // Debug log to show which channel's messages we're displaying
   useEffect(() => {
-    console.log(`[ChatContainer] Displaying messages for channel: ${channelName}, count: ${currentMessages.length}`);
+    // console.log(`[ChatContainer] Displaying messages for channel: ${channelName}, count: ${currentMessages.length}`);
   }, [channelName, currentMessages]);
 
   // Connect to Twitch chat when component mounts
   useEffect(() => {
-    console.log('[ChatContainer] Initializing chat container...');
+    // console.log('[ChatContainer] Initializing chat container...');
 
     // Initialize speech service
     speechService.initialize();
@@ -61,11 +61,11 @@ const ChatContainer = () => {
 
       // Skip messages that don't have a channel name
       if (!messageChannelName) {
-        console.log(`[ChatContainer] Skipping message with no channel name`);
+        // console.log(`[ChatContainer] Skipping message with no channel name`);
         return;
       }
 
-      console.log(`[ChatContainer] Received message for channel ${messageChannelName}: "${twitchMessage.message}" from ${twitchMessage.username}`);
+      // console.log(`[ChatContainer] Received message for channel ${messageChannelName}: "${twitchMessage.message}" from ${twitchMessage.username}`);
 
       // Convert Twitch message to our ChatMessage format
       const chatMessage: ChatMessage = {
@@ -79,7 +79,7 @@ const ChatContainer = () => {
         profileImage: twitchMessage.profileImageUrl || '',
       };
 
-      console.log(`[ChatContainer] Processed message from ${chatMessage.username} for channel ${messageChannelName}`);
+      // console.log(`[ChatContainer] Processed message from ${chatMessage.username} for channel ${messageChannelName}`);
 
       // Add message to the specific channel's message list
       setMessagesByChannel(prev => ({
@@ -125,7 +125,7 @@ const ChatContainer = () => {
     // Set up event listener for connection status
     const handleConnectionStatus = (event: CustomEvent) => {
       const { connected } = event.detail;
-      console.log(`[ChatContainer] Connection status: ${connected ? 'Connected' : 'Disconnected'}`);
+      // console.log(`[ChatContainer] Connection status: ${connected ? 'Connected' : 'Disconnected'}`);
       setIsConnected(connected);
     };
 
@@ -135,7 +135,7 @@ const ChatContainer = () => {
 
       if (!messageChannelName || !username) return;
 
-      console.log(`[ChatContainer] Received profile update for ${username} in channel ${messageChannelName}`);
+      // console.log(`[ChatContainer] Received profile update for ${username} in channel ${messageChannelName}`);
 
       // Get the profile from our service
       const profile = await twitchProfileService.getUserProfile(username);
@@ -186,11 +186,11 @@ const ChatContainer = () => {
 
             // Check if already connected to the right channel
             if (!twitchService.isConnected() || twitchService.getChannel() !== channelName.trim().toLowerCase()) {
-              console.log(`[ChatContainer] Connecting to ${channelName} chat...`);
+              // console.log(`[ChatContainer] Connecting to ${channelName} chat...`);
 
               // Disconnect first to ensure a clean connection
               if (twitchService.isConnected()) {
-                console.log(`[ChatContainer] Disconnecting from current chat before connecting to ${channelName}...`);
+                // console.log(`[ChatContainer] Disconnecting from current chat before connecting to ${channelName}...`);
                 twitchService.disconnect();
 
                 // Wait a moment before connecting
@@ -200,9 +200,9 @@ const ChatContainer = () => {
               twitchService.connect(credentials);
               setIsConnected(true);
 
-              console.log(`[ChatContainer] Connection initiated to ${channelName} chat`);
+              // console.log(`[ChatContainer] Connection initiated to ${channelName} chat`);
             } else {
-              console.log(`[ChatContainer] Already connected to ${channelName} chat`);
+              // console.log(`[ChatContainer] Already connected to ${channelName} chat`);
               setIsConnected(true);
             }
           } catch (error) {
@@ -210,11 +210,11 @@ const ChatContainer = () => {
             setIsConnected(false);
           }
         } else {
-          console.log('[ChatContainer] Not logged in or missing access token');
+          // console.log('[ChatContainer] Not logged in or missing access token');
           setIsConnected(false);
         }
       } else {
-        console.log('[ChatContainer] No channel name provided');
+        // console.log('[ChatContainer] No channel name provided');
         setIsConnected(false);
       }
     };
@@ -251,7 +251,7 @@ const ChatContainer = () => {
       import('@/services/TwitchService').then(module => {
         const twitchService = module.default;
         if (twitchService.isConnected()) {
-          console.log('[ChatContainer] Disconnecting from Twitch chat');
+          // console.log('[ChatContainer] Disconnecting from Twitch chat');
           twitchService.disconnect();
         }
       });
@@ -269,7 +269,7 @@ const ChatContainer = () => {
       return updated;
     });
 
-    console.log(`[ChatContainer] Cleared messages for channel: ${channel}`);
+    // console.log(`[ChatContainer] Cleared messages for channel: ${channel}`);
   };
 
   // Auto-scroll to bottom when new messages arrive
@@ -306,13 +306,15 @@ const ChatContainer = () => {
               <h2 className="text-sm font-medium">{channelName || 'Chat'}</h2>
               <div className={`ml-2 w-2 h-2 rounded-full ${isChannelLive ? 'bg-green-500' : theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
               {currentMessages.length > 0 && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="xs"
                   className="ml-2 text-xs text-muted-foreground hover:text-destructive"
                   onClick={() => channelName && clearChannelMessages(channelName)}
                   title="Clear messages"
                 >
-                  (clear)
-                </button>
+                  Clear Chat
+                </Button>
               )}
             </div>
             <span className="text-xs text-muted-foreground">

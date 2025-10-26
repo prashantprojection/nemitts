@@ -46,10 +46,16 @@ const RightPanel = ({ /* onClose, */ onShowFAQ }: RightPanelProps) => {
       setActiveSection('menu');
     };
 
+    const handleOpenVoiceControls = () => {
+      setActiveSection('voice-controls');
+    };
+
     window.addEventListener('back-to-menu', handleBackToMenu);
+    window.addEventListener('open-voice-controls', handleOpenVoiceControls);
 
     return () => {
       window.removeEventListener('back-to-menu', handleBackToMenu);
+      window.removeEventListener('open-voice-controls', handleOpenVoiceControls);
     };
   }, []);
 
@@ -83,16 +89,6 @@ const RightPanel = ({ /* onClose, */ onShowFAQ }: RightPanelProps) => {
       </div>
 
 {/* Menu options moved to content area */}
-
-      {/* Version info - only show on main menu */}
-      {activeSection === 'menu' && (
-        <div className="p-3 text-xs text-center text-muted-foreground border-t border-border/30">
-          <div>TTS Reader v1.0.0</div>
-          {channelName && (
-            <div className="mt-1">Connected to: {channelName}</div>
-          )}
-        </div>
-      )}
 
       {/* Content Area - conditionally rendered */}
       <div className="flex-1 overflow-hidden">
@@ -186,26 +182,24 @@ const RightPanel = ({ /* onClose, */ onShowFAQ }: RightPanelProps) => {
                 </svg>
                 FAQ & Support
               </Button>
+
+              {/* Sponsored Channels Section */}
+              <div className="p-2 mt-2 border-t border-border/30">
+                <h4 className="text-xs font-semibold text-muted-foreground px-3 py-2">Sponsored Channels</h4>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start rounded-lg p-3 mb-1 font-normal text-sm"
+                  onClick={() => window.open('https://twitch.tv/nemi_nemesis', '_blank')}
+                >
+                  nemi_nemesis
+                </Button>
+                {/* Add more sponsored channels here in the future */}
+              </div>
             </div>
           </ScrollArea>
         )}
 
-        {/* Sponsored Channels Section - Add this new section */} 
-        {activeSection === 'menu' && (
-          <div className="p-2 border-t border-border/30">
-            <h4 className="text-xs font-semibold text-muted-foreground px-3 py-2">Sponsored Channels</h4>
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-lg p-3 mb-1 font-normal text-sm"
-              onClick={() => window.open('https://twitch.tv/nemi_nemesis', '_blank')}
-            >
-              nemi_nemesis
-            </Button>
-            {/* Add more sponsored channels here in the future */}
-          </div>
-        )}
-
-        {/* Voice Selection Panel */} 
+        {/* Voice Selection Panel */}
         {activeSection === 'voice-selection' && (
           <VoiceSelectionPanel onBack={() => setActiveSection('menu')} />
         )}
@@ -225,6 +219,23 @@ const RightPanel = ({ /* onClose, */ onShowFAQ }: RightPanelProps) => {
           <StylePanel onBack={() => setActiveSection('menu')} />
         )}
       </div>
+
+      {/* Version info - only show on main menu */}
+      {activeSection === 'menu' && (
+        <div className="p-3 text-xs text-center text-muted-foreground border-t border-border/30">
+          <div>TTS Reader v1.0.0</div>
+          {channelName && (
+            <div className="mt-1">Connected to: {channelName}</div>
+          )}
+          <Button
+            variant="link"
+            className="text-xs h-auto p-0 mt-2 text-muted-foreground hover:text-primary"
+            onClick={() => window.open('https://github.com/your-repo/tts-reader', '_blank')}
+          >
+            View on GitHub
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

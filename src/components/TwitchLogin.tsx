@@ -153,6 +153,14 @@ const TwitchLogin = ({ onLoginChange }: TwitchLoginProps) => {
             <DialogDescription className="text-center text-muted-foreground">
               You'll be redirected to Twitch to authorize this application. Once authorized, you'll be brought back to this app automatically.
             </DialogDescription>
+            <div className="mt-4 bg-muted/50 border border-border/50 rounded-lg p-3 text-xs text-muted-foreground">
+              <strong>Permissions Requested:</strong>
+              <ul className="list-disc pl-4 mt-1">
+                <li>Read your public Twitch profile information.</li>
+                <li>Connect to your channel's chat.</li>
+                <li>Read chat messages from your channel.</li>
+              </ul>
+            </div>
             <div className="mt-2 text-muted-foreground/70 text-sm text-center">
               This will ensure a fresh login session with Twitch.
             </div>
